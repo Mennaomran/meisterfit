@@ -105,28 +105,50 @@ app.get('/api/workouts/:userId', async (req, res) => {
 // ===================================================
 const dailyReportSchema = new mongoose.Schema({
     user_id: { type: String, required: true },
-    date: { type: String, required: true }, 
+    date: { type: String, required: true },
     health_grade: { type: Number, required: true },
-    workout_summary: { type: Object, default: {} }
+
+    workout_summary: {
+        exercises_completed: Number,
+        calories_burned: Number,
+        duration_min: Number,
+        ai_accuracy: Number,
+        target_muscles: [String],
+        notes: String
+    }
 }, { collection: 'daily_reports' });
 
 const DailyReport = mongoose.model('DailyReport', dailyReportSchema);
 
+
 // POST لحفظ تقرير يومي جديد
 app.post('/api/daily-reports', async (req, res) => {
     try {
+        const workoutSummary = req.body.workout_summary || {};
+
         const newReport = new DailyReport({
             user_id: req.body.user_id,
             date: req.body.date || new Date().toISOString().split('T')[0],
             health_grade: req.body.health_grade,
-            workout_summary: req.body.workout_summary || {}
+
+            workout_summary: {
+                exercises_completed: workoutSummary.exercises_completed,
+                calories_burned: workoutSummary.calories_burned,
+                duration_min: workoutSummary.duration_min,
+                ai_accuracy: workoutSummary.ai_accuracy,
+                target_muscles: workoutSummary.target_muscles,
+                notes: workoutSummary.notes
+            }
         });
+
         await newReport.save();
         res.status(201).json({ message: "Daily report saved successfully!" });
+
     } catch (error) {
         res.status(400).json({ error: error.message });
     }
 });
+
 
 // GET لجلب التقارير اليومية للمستخدم (شاشة الـ Daily Report)
 app.get('/api/daily-reports/:user_id', async (req, res) => {
