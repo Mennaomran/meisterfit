@@ -6,12 +6,17 @@ const app = express();
 app.use(express.json());
 app.use(cors());
 
-const mongoURI = process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017/gymProject';
+const mongoURI = process.env.MONGODB_URI;
 
-mongoose.connect(mongoURI)
-    .then(() => console.log("Connected to MongoDB!"))
-    .catch(err => console.error("Connection Error:", err));
+if (!mongoURI) {
+  throw new Error("MONGODB_URI is missing");
+}
 
+mongoose.connect(mongoURI, {
+  serverSelectionTimeoutMS: 10000
+})
+  .then(() => console.log("Connected to MongoDB!"))
+  .catch(err => console.error("Connection Error:", err.message));
 // ===================================================
 // الجزء الأول: جدول الـ workout_history (التاريخ والمسجل)
 // ===================================================
