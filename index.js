@@ -134,7 +134,8 @@ app.get('/api/daily-reports/:user_id', async (req, res) => {
 });
 
 
-// تشغيل السيرفر
+// تشغيل السيرفر المظبوط
 const port = process.env.PORT || 3000;
-app.listen(port, () => console.log(`Running on ${port}`));| 3000;
-app.listen(port, () => console.log(`Running on ${port}`));
+app.listen(port, () => {
+    console.log(`Running on ${port}`);
+});
